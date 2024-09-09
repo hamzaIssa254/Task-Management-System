@@ -1,66 +1,148 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+Task Management API
+Welcome to the Task Management API! This API allows for efficient management of tasks with different roles, providing functionalities for CRUD operations, task assignments, and advanced querying. Below you'll find detailed information about the API, its features, and how to use it.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Table of Contents
+Overview
+Features
+API Endpoints
+Models
+Query Scopes
+Soft Deletes
+Date Handling
+Setup
+Testing
+Contributing
+License
+Overview
+The Task Management API is designed to help manage tasks and users with different roles. It supports creating, updating, viewing, and deleting tasks and users while implementing role-based access controls to ensure proper authorization.
 
-## About Laravel
+Features
+Role-based Access Control: Admin, Manager, and User roles with specific permissions.
+CRUD Operations: Create, read, update, and delete tasks and users.
+Task Assignment: Managers can assign tasks to users. Assigned users can update task statuses.
+Advanced Querying: Filter tasks by priority and status.
+Soft Deletes: Restore deleted tasks and users.
+Date Handling: Accessors and mutators for date formatting.
+API Endpoints
+Task Management
+POST /tasks
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Create a new task.
+GET /tasks
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Retrieve all tasks with optional filtering by priority and status.
+GET /tasks/{id}
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Retrieve details of a specific task.
+PUT /tasks/{id}
 
-## Learning Laravel
+Update a task (only assigned user or admin can update).
+DELETE /tasks/{id}
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Soft delete a task.
+Task Assignment
+POST /tasks/{id}/assign
+Assign a task to a user (Manager role only).
+User Management
+POST /users
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Create a new user.
+GET /users
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Retrieve all users.
+PUT /users/{id}
 
-## Laravel Sponsors
+Update user details (Admin role only).
+DELETE /users/{id}
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+Soft delete a user.
+Models
+Task Model
+fillable: ['title', 'description', 'priority', 'due_date', 'status', 'assigned_to']
+primaryKey: task_id
+table: tasks
+timestamps: true
+User Model
+guarded: ['password', 'role']
+primaryKey: user_id
+table: users
+timestamps: true
+Query Scopes
+Priority Scope
+Filter tasks by priority:
 
-### Premium Partners
+php
+Copy code
+public function scopePriority($query, $priority)
+{
+    return $query->where('priority', $priority);
+}
+Status Scope
+Filter tasks by status:
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+php
+Copy code
+public function scopeStatus($query, $status)
+{
+    return $query->where('status', $status);
+}
+Soft Deletes
+Soft deletes are implemented for both tasks and users to allow restoration. Use the onlyTrashed() method to retrieve deleted records and restore() to recover them.
 
-## Contributing
+Date Handling
+Use accessors and mutators for date formatting:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+php
+Copy code
+// Accessor
+public function getDueDateAttribute($value)
+{
+    return \Carbon\Carbon::parse($value)->format('d-m-Y H:i');
+}
 
-## Code of Conduct
+// Mutator
+public function setDueDateAttribute($value)
+{
+    $this->attributes['due_date'] = \Carbon\Carbon::createFromFormat('d-m-Y H:i', $value)->format('Y-m-d H:i:s');
+}
+Setup
+Clone the repository:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+bash
+Copy code
+git clone <repository-url>
+Install dependencies:
 
-## Security Vulnerabilities
+bash
+Copy code
+composer install
+Set up the environment:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Copy the .env.example file to .env and update the database configuration.
 
-## License
+bash
+Copy code
+cp .env.example .env
+Run migrations and seeders:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+bash
+Copy code
+php artisan migrate
+php artisan db:seed
+Start the server:
+
+bash
+Copy code
+php artisan serve
+Testing
+Run the tests with:
+
+bash
+Copy code
+php artisan test
+Contributing
+Contributions are welcome! Please fork the repository and submit a pull request with your changes.
+
+License
+This project is licensed under the MIT License. See the LICENSE file for details.
+
