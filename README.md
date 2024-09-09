@@ -71,8 +71,7 @@ Query Scopes
 Priority Scope
 Filter tasks by priority:
 
-php
-Copy code
+
 public function scopePriority($query, $priority)
 {
     return $query->where('priority', $priority);
@@ -80,8 +79,7 @@ public function scopePriority($query, $priority)
 Status Scope
 Filter tasks by status:
 
-php
-Copy code
+
 public function scopeStatus($query, $status)
 {
     return $query->where('status', $status);
@@ -92,8 +90,7 @@ Soft deletes are implemented for both tasks and users to allow restoration. Use 
 Date Handling
 Use accessors and mutators for date formatting:
 
-php
-Copy code
+
 // Accessor
 public function getDueDateAttribute($value)
 {
@@ -108,38 +105,25 @@ public function setDueDateAttribute($value)
 Setup
 Clone the repository:
 
-bash
-Copy code
 git clone <repository-url>
 Install dependencies:
 
-bash
-Copy code
 composer install
 Set up the environment:
 
 Copy the .env.example file to .env and update the database configuration.
 
-bash
-Copy code
 cp .env.example .env
 Run migrations and seeders:
 
-bash
-Copy code
 php artisan migrate
-php artisan db:seed
+php artisan db:seed UserSeeder
 Start the server:
-
-bash
-Copy code
 php artisan serve
-Testing
-Run the tests with:
 
-bash
-Copy code
-php artisan test
+Testing
+test it with postman: https://documenter.getpostman.com/view/34383133/2sAXjSy8oz
+
 Contributing
 Contributions are welcome! Please fork the repository and submit a pull request with your changes.
 
